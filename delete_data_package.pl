@@ -1,4 +1,4 @@
-my $dir = "D:\\Salary\\Source\\Server\\packs";
+my $dir = $ARGV[0];
 
 opendir(DIR, $dir) or die "can't opendir $dir: $!";
 
