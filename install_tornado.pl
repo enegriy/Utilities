@@ -9,23 +9,29 @@ use File::Copy::Recursive qw(fcopy rcopy dircopy fmove rmove dirmove);
 
 
 
-my $install_dir = "P:\\ОР\\_Tornado\\_Emily\\15186";
+my $install_dir = "P:\\ОР\\_Tornado\\_Emily\\";
 my $work_dir = "D:\\Salary\\Source";
 my $base_name = "Salary";
 
 
 
-my(	$path_to_istall, $path_to_work,	$base_name_par ) = @ARGV;
+my(	$install_dir_par, $work_dir_par, $base_name_par ) = @ARGV;
 
-if(defined($path_to_istall)){
-	$install_dir = $path_to_istall;
+if(defined($install_dir_par)){
+	$install_dir = $install_dir_par;
 }
-if(defined($path_to_work)){
-	$work_dir = $path_to_work;
+if(defined($work_dir_par)){
+	$work_dir = $work_dir_par;
 }
 if(defined($base_name_par)){
 	$base_name = $base_name_par;
 }
+
+&show_install_dirs( $install_dir, 3 );
+print "What distribution to install: ";
+chomp(my $distr = <STDIN>);
+$install_dir = File::Spec->catfile($install_dir, $distr);
+
 
 print "\nInstall directory: $install_dir \nWork directory: $work_dir\nSqlServer Base Name: $base_name\n\n";
 
@@ -120,6 +126,44 @@ system File::Spec->catfile($install_dir, $prog_name);
 #удаление $tmp_dir
 print "Deleting temporary files...\n";
 rmtree($tmp_dir);
+
+
+
+#Показываю список каталогов для установки
+sub show_install_dirs{
+	my $dir = "\\.";
+	if(defined($_[0])){
+		$dir = $_[0];
+	}
+
+	my $count = 3;
+	if(defined($_[1])){
+		$count = $_[1];
+	}
+
+	opendir my($dinstall), $dir or die "Couldn't open dir : $!";
+	my @all_dirs_install = readdir $dinstall;
+	close $dinstall;
+
+	my %file_and_date = map {
+		unless($_ =~ /^\./){
+			my @attrib_dir = stat( File::Spec->catfile($dir,$_) );
+			$_ => $attrib_dir[9];
+		}
+	} @all_dirs_install;
+
+
+	
+	my $cur = 0;
+	foreach my $name (sort { $file_and_date{$b} <=> $file_and_date{$a} } keys %file_and_date) {
+		if($cur >= $count){
+			next;
+		}
+		$cur++;
+	
+		print "$name \n";
+	}
+}
 
 
 
