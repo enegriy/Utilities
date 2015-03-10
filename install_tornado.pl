@@ -36,6 +36,9 @@ $install_dir = File::Spec->catfile($install_dir, $distr);
 print "\nInstall directory: $install_dir \nWork directory: $work_dir\nSqlServer Base Name: $base_name\n\n";
 
 
+print "Close application, please:\n - SmartClient\n - AssemblyDeployer\n - TornadoServer\n - Visual Studio\nPress Enter to continue...\n\n";
+<STDIN>;
+
 
 my $tmp_dir = File::Spec->catfile(File::Spec->tmpdir(), 'tornado_extracted');
 my @actual_dirs = qw(Client Server TornadoLib);
