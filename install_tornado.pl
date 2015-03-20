@@ -6,6 +6,7 @@ use File::Path;
 use Archive::Zip qw( :ERROR_CODES );
 use File::Copy;
 use File::Copy::Recursive qw(fcopy rcopy dircopy fmove rmove dirmove);
+use IO::Dir;
 
 
 
@@ -30,6 +31,7 @@ if(defined($base_name_par)){
 &show_install_dirs( $install_dir, 3 );
 print "What distribution to install: ";
 chomp(my $distr = <STDIN>);
+$distr = &get_actual_distrib($install_dir, $distr);
 $install_dir = File::Spec->catfile($install_dir, $distr);
 
 
@@ -166,6 +168,28 @@ sub show_install_dirs{
 	
 		print "$name \n";
 	}
+}
+
+sub get_actual_distrib{
+	my $install_dir = shift;
+	my $distr = shift;
+	
+	my $dir = IO::Dir->new( File::Spec->catfile($install_dir, $distr) );
+	unless(defined($dir))
+	{
+		$dir = IO::Dir->new($install_dir);
+		while(defined(my $f = $dir->read))
+		{
+			if($f =~ /$distr/i)
+			{
+				$distr = $f;
+				print "Distribution directory: $distr \n";
+				last;
+			}
+		}
+	}
+	
+	$distr;
 }
 
 
