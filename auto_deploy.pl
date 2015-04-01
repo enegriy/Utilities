@@ -1,8 +1,10 @@
 use warnings;
 use strict;
-use File::Spec;	
+use File::Spec;
 use Data::Dumper;
 use File::stat;
+
+require "tornado_appserver_config.pm";
 
 my $wait_minutes = 2;
 my $work_dir = "D:\\Salary\\Source";
@@ -18,6 +20,25 @@ if(defined($wait_minutes_par)){
 
 my $server_dir = File::Spec->catfile($work_dir,"Server");
 my $packs_dir = File::Spec->catfile($server_dir,"packs");
+
+my $is_gen_appserver = 0;
+foreach(@ARGV)
+{
+	if($_ eq '-mssql')
+	{
+		gen_appserver_mssql("Salary", $server_dir);
+		$is_gen_appserver = 1;
+	}
+	elsif($_ eq '-postgre')
+	{
+		gen_appserver_postgre("Salary", "admin", "1", $server_dir);
+		$is_gen_appserver = 1;
+	}
+}
+if($is_gen_appserver == 0)
+{
+	gen_appserver_mssql("Salary", $server_dir);
+}
 
 print "Autodeploy waiting...\n";
 

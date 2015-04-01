@@ -8,7 +8,7 @@ use File::Copy;
 use File::Copy::Recursive qw(fcopy rcopy dircopy fmove rmove dirmove);
 use IO::Dir;
 
-
+require "tornado_appserver_config.pm";
 
 my $install_dir = "P:\\ОР\\_Tornado\\_Emily\\";
 my $work_dir = "D:\\Salary\\Source";
@@ -190,66 +190,4 @@ sub get_actual_distrib{
 	}
 	
 	$distr;
-}
-
-
-
-#генерирую appserver.config
-sub gen_appserver{
-	my $base_name = "BASE_NAME";
-	if(defined($_[0])){
-		$base_name = $_[0];
-	}
-
-	my $file = "appserver.config";
-	my $dir = ".";
-	if(defined($_[1])){
-		$dir = $_[1];
-	}
-
-	open(FILE, "> ".File::Spec->catfile($dir, $file));
-
-	print FILE '<?xml version="1.0" encoding="windows-1251"?>
-<server-config xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<database>
-		<provider>MSSQL</provider>
-		<work-db-connection-string>Data Source=(local)\SQLEXPRESS;Initial Catalog='.$base_name.';Integrated Security=True;Connect Timeout=1800</work-db-connection-string>
-	</database>
-
-	<server-mode>Native</server-mode>
-
-	<logging>
-		<loggers>
-			<logger type="Parus.Net.Logger.StandardStores.ConsoleLogStore, AppServer.Common">
-				<filter-level>Normal</filter-level>
-			</logger>
-			<logger type="Parus.Net.Logger.StandardStores.TextFileLogStore, AppServer.Common">
-				<filter-level>Minimal</filter-level>
-				<params>
-					<item key="path" value=".\Tornado_Log\" />
-					<item key="period" value="daily" />
-					<item key="size" value="1000000" />
-				</params>
-			</logger>
-		</loggers>
-	</logging>
-	<security-config>
-		<role-groups>
-			<role-group role="User" group-name="Пользователи"/>
-			<role-group role="ServerAdministrator" group-name="Администраторы"/>
-			<role-group role="ServerAdministrator" group-name="Administrators"/>
-		</role-groups>
-	</security-config>
-
-	<update-service>
-		<port>9291</port>
-	</update-service>
-	<client-update-service>
-		<port>9292</port>
-	</client-update-service>
-	<storage>
-		<path>C:\ProgramData\Parus.TornadoServer.PerformanceBefore</path>
-	</storage>
-</server-config>';
-	close FILE;
 }
