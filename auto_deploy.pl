@@ -5,6 +5,7 @@ use Data::Dumper;
 use File::stat;
 
 require "tornado_appserver_config.pm";
+require "delete_data_package.pm";
 
 my $wait_minutes = 2;
 my $work_dir = "D:\\Salary\\Source";
@@ -22,17 +23,22 @@ my $server_dir = File::Spec->catfile($work_dir,"Server");
 my $packs_dir = File::Spec->catfile($server_dir,"packs");
 
 my $is_gen_appserver = 0;
+my $is_delete_data_package = 0;
 foreach(@ARGV)
 {
 	if($_ eq '-mssql')
 	{
-		gen_appserver_mssql("Salary", $server_dir);
+		gen_appserver_mssql("salary", $server_dir);
 		$is_gen_appserver = 1;
 	}
 	elsif($_ eq '-postgre')
 	{
-		gen_appserver_postgre("Salary", "admin", "1", $server_dir);
+		gen_appserver_postgre("salary", "admin", "1", $server_dir);
 		$is_gen_appserver = 1;
+	}
+	elsif($_ eq '-d')
+	{
+		$is_delete_data_package = 1;
 	}
 }
 if($is_gen_appserver == 0)
@@ -65,7 +71,10 @@ while($last_modification < $wait_minutes)
 	printf ("%s => %1.1f\n",$file_name, $last_modification);
 }
 
-&run_deploy ( $server_dir );
+if($is_delete_data_package){
+	delete_data_package( $packs_dir );
+}
+run_deploy ( $server_dir );
 
 
 
